@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ALPHA Order Transition Record",
+  "type": "object",
+  "required": ["id", "from", "to", "orderId", "exitTrigger", "actor", "timestamp"],
+  "properties": {
+    "id": {"type": "string"},
+    "from": {"type": "string"},
+    "to": {"type": "string"},
+    "orderId": {"type": "string"},
+    "exitTrigger": {"type": "string"},
+    "actor": {"type": "string"},
+    "authority": {"type": ["string", "null"]},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "rationale": {"type": "string"},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}},
+    "contextSnapshot": {"type": ["string", "null"]}
+  }
+}
