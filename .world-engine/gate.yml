@@ -1,0 +1,59 @@
+# Machine-readable World Engine change-gate vocabulary.
+# This vocabulary supports repository automation. It is not the source of architectural authority.
+
+status:
+  allowed:
+    - green
+    - yellow
+    - red
+
+risk:
+  allowed:
+    - low
+    - medium
+    - high
+
+impact:
+  allowed:
+    - low
+    - medium
+    - high
+
+reversibility:
+  allowed:
+    - low
+    - medium
+    - high
+
+authority:
+  allowed:
+    - authoritative
+    - non-authoritative
+
+evidence_level:
+  allowed:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+
+promotion_target:
+  allowed:
+    - green
+    - red
+    - null
+
+# Orthogonal dimensions. Issue workflow state is tracked separately from this gate.
+# Provenance should be preserved for consequential changes.
+invariants:
+  - authoritative_changes_require_explicit_promotion
+  - yellow_material_is_not_authoritative
+  - red_material_is_not_authoritative
+  - insufficient_evidence_is_not_automatically_red
+  - status_must_be_explicit
+  - evidence_level_does_not_automatically_grant_authority
+  - provenance_should_be_preserved
+  - counterfactual_work_must_not_mutate_parent_authority

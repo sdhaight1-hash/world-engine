@@ -1,0 +1,58 @@
+name: Validate change gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR gate metadata
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          body="${PR_BODY:-}"
+
+          require_field() {
+            local label="$1"
+            local pattern="$2"
+            if ! grep -Eiq "${pattern}" <<< "$body"; then
+              echo "Missing or malformed gate field: ${label}"
+              exit 1
+            fi
+          }
+
+          require_field "Status" '^[[:space:]]*-[[:space:]]+\*\*Status:\*\*[[:space:]]+(GREEN|YELLOW|RED)[[:space:]]*$'
+          require_field "Evidence" '^[[:space:]]*-[[:space:]]+\*\*Evidence:\*\*[[:space:]]+E[0-6][[:space:]]*$'
+          require_field "Risk" '^[[:space:]]*-[[:space:]]+\*\*Risk:\*\*[[:space:]]+(LOW|MEDIUM|HIGH)[[:space:]]*$'
+          require_field "Impact" '^[[:space:]]*-[[:space:]]+\*\*Impact:\*\*[[:space:]]+(LOW|MEDIUM|HIGH)[[:space:]]*$'
+          require_field "Reversibility" '^[[:space:]]*-[[:space:]]+\*\*Reversibility:\*\*[[:space:]]+(LOW|MEDIUM|HIGH)[[:space:]]*$'
+          require_field "Authority" '^[[:space:]]*-[[:space:]]+\*\*Authority:\*\*[[:space:]]+(AUTHORITATIVE|NON-AUTHORITATIVE)[[:space:]]*$'
+
+          if ! grep -Eiq '^[[:space:]]*#{0,6}[[:space:]]*Proposed disposition' <<< "$body"; then
+            echo "Missing Proposed disposition section"
+            exit 1
+          fi
+
+          status=$(grep -Eio '^[-[:space:]]+\*\*Status:\*\*[[:space:]]+(GREEN|YELLOW|RED)' <<< "$body" | head -1 | grep -Eio '(GREEN|YELLOW|RED)' || true)
+          authority=$(grep -Eio '^[-[:space:]]+\*\*Authority:\*\*[[:space:]]+(AUTHORITATIVE|NON-AUTHORITATIVE)' <<< "$body" | head -1 | grep -Eio '(AUTHORITATIVE|NON-AUTHORITATIVE)' || true)
+
+          if [[ "$status" == "GREEN" && "$authority" != "AUTHORITATIVE" ]]; then
+            echo "GREEN changes must declare AUTHORITATIVE authority."
+            exit 1
+          fi
+
+          if [[ "$status" == "RED" && "$authority" == "AUTHORITATIVE" ]]; then
+            echo "RED changes cannot declare AUTHORITATIVE authority."
+            exit 1
+          fi
+
+          echo "World Engine change-gate metadata is present and internally consistent."

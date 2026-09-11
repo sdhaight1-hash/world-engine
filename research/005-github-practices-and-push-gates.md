@@ -16,16 +16,14 @@ Nothing becomes authoritative merely because it has been discussed, researched, 
 
 Authority is granted through an explicit validation and promotion decision.
 
-Every authoritative architectural change should be traceable to its evidence, decision, implementation, and validation.
+Every consequential authoritative architectural change should be traceable to its evidence, decision, implementation, and validation.
 
 ## 3. Evidence pipeline
 
 ```text
 Question
-  -> Research
-  -> Hypothesis
+  -> Research / Experiment / Direct Resolution
   -> Evidence
-  -> Experiment
   -> Evaluation
   -> Decision
   -> Specification
@@ -34,78 +32,27 @@ Question
   -> Authority
 ```
 
-Research can establish plausibility. Experiments establish feasibility. Integration establishes architectural validity.
+Research and experiments are activities that produce evidence. They are not mandatory stages for every change.
 
 ## 4. Gate states
 
-### GREEN: Accepted
+### GREEN: established
 
-Green material is sufficiently established for authoritative implementation or permanent project documentation.
+Green material is sufficiently established and validated for its stated promotion target.
 
-Typical criteria:
+### YELLOW: provisional
 
-- purpose is explicit
-- affected architectural boundary is known
-- established invariants are preserved
-- dependencies and assumptions are understood
-- required validation exists or is appropriate to the claim
-- documentation is updated when architecture changes
-- provenance/evidence is recorded where applicable
-- no unresolved high-risk assumption is silently promoted
-- the change is reasonably reversible
-- the change is reviewable as a focused unit
+Yellow material is unresolved, provisional, insufficiently evidenced, experimental, or otherwise not ready for promotion.
 
-**Disposition:** merge / authoritative.
+### RED: rejected
 
-### YELLOW: Provisional
+Red material has sufficient evidence or an explicit decision establishing that the approach should not be promoted for its stated scope. Red is preserved as negative knowledge.
 
-Yellow material is worth preserving but is not authoritative architecture.
-
-Typical examples:
-
-- architectural hypotheses
-- research findings needing validation
-- candidate implementations
-- untested performance assumptions
-- alternative designs
-- experimental algorithms
-- uncertain dependencies
-
-Yellow material must be explicitly marked provisional, state its uncertainty and assumptions, define validation criteria, and identify a path toward Green or Red.
-
-**Disposition:** document / experiment / prototype.
-
-### RED: Rejected or insufficient
-
-Red material must not enter authoritative architecture.
-
-Reasons may include:
-
-- violation of an established invariant
-- inadequate evidence for architectural impact
-- unacceptable coupling
-- falsified central assumption
-- inability to validate the claim
-- unacceptable security or supply-chain risk
-- premature optimization or premature architecture
-- speculative implementation presented as established design
-
-Red material may still be preserved as negative evidence or historical record.
-
-**Disposition:** reject / quarantine / record.
+**Insufficient evidence is not, by itself, Red. It is normally Yellow.**
 
 ## 5. Repository admission is not architectural truth
 
-A useful distinction is:
-
-| State | May exist in GitHub | Authoritative architecture |
-|---|---:|---:|
-| Green | Yes | Yes |
-| Yellow | Yes, controlled and explicit | No |
-| Red | Possibly, explicitly quarantined | No |
-| Unclassified | No | No |
-
-A committed artifact is not authoritative merely because it exists in the repository.
+A material can exist in GitHub without being authoritative architecture.
 
 Status must be explicit and must not be inferred from location, filename, commit existence, or implementation completeness.
 
@@ -113,62 +60,52 @@ Status must be explicit and must not be inferred from location, filename, commit
 
 Use the following evidence scale when evaluating consequential claims:
 
-- **E0: Speculation** — unsupported hypothesis. Never Green by itself.
-- **E1: Literature / external evidence** — others have demonstrated something related. Usually Yellow.
-- **E2: Reasoned architectural analysis** — explicit reasoning under stated assumptions. May support low-risk Green documentation, otherwise Yellow.
-- **E3: Prototype** — working implementation demonstrates feasibility. Normally Yellow.
-- **E4: Controlled experiment** — defined hypothesis tested under defined conditions.
-- **E5: Reproducible validation** — result can be independently reproduced and meets acceptance criteria.
-- **E6: Integrated validation** — result works within World Engine while preserving architectural invariants.
+- **E0: Speculation**
+- **E1: Literature / external evidence**
+- **E2: Reasoned architectural analysis**
+- **E3: Prototype**
+- **E4: Controlled experiment**
+- **E5: Reproducible validation**
+- **E6: Integrated validation**
 
-Evidence level does not automatically determine status. Risk, impact, reversibility, and architectural authority must also be considered.
+Evidence level does not automatically determine Green, Yellow, Red, Issue state, or authority.
 
-## 7. Confidence and risk are separate
+## 7. Orthogonal dimensions
 
-Do not collapse confidence and risk into one score.
+The governance model separates:
 
-Examples:
-
-- high confidence + high risk: known requirement with large architectural blast radius
-- low confidence + low risk: isolated experiment
-- low confidence + high risk: candidate architecture requiring strong evidence before adoption
-
-Minimum useful gate dimensions are:
-
-- confidence
-- risk
-- impact
-- reversibility
 - evidence level
-- architectural authority
+- Issue workflow state
+- Green / Yellow / Red promotion disposition
+- explicit authority
+- provenance
 
-## 8. Yellow promotion lifecycle
+Do not collapse these into one status machine.
 
-Yellow is not a permanent junk drawer.
+## 8. Promotion lifecycle
 
 ```text
 YELLOW
   |\
-  | \ evidence improves
+  | \ sufficient evidence / validation + decision
   |  -> GREEN
   |
-  | evidence fails
+  | sufficient evidence for rejection
   v
  RED
 
 Unresolved evidence keeps the item YELLOW.
-```
 
-A research item should record its promotion target and validation requirements.
+RED -> reconsideration is possible when genuinely new evidence changes the premises.
+```
 
 ## 9. Pull request gate
 
 Meaningful changes should be evaluated as focused changes, preferably through a pull request or equivalent review record.
 
-Recommended PR fields:
+Recommended fields:
 
 ```text
-## Gate
 Status: GREEN / YELLOW / RED
 Evidence: E0-E6
 Risk: LOW / MEDIUM / HIGH
@@ -176,23 +113,17 @@ Impact: LOW / MEDIUM / HIGH
 Reversibility: HIGH / MEDIUM / LOW
 Authority: AUTHORITATIVE / NON-AUTHORITATIVE
 
-## Purpose
-
-## Evidence
-
-## Invariants affected
-
-## Assumptions
-
-## Validation
-
-## Documentation
-
-## Remaining uncertainty
-
-## Proposed disposition
-MERGE / DOCUMENT / EXPERIMENT / REJECT
+Purpose
+Evidence
+Invariants affected
+Assumptions
+Validation
+Documentation
+Remaining uncertainty
+Proposed disposition
 ```
+
+These fields support review. They do not replace the underlying governance model.
 
 ## 10. Commit taxonomy
 
@@ -212,13 +143,9 @@ revert(scope): description
 
 The taxonomy is a convention, not a substitute for the gate.
 
-Prefer commits that express one meaningful architectural or implementation claim over large undifferentiated commits.
-
 ## 11. Documentation coupling
 
 When a change affects an architectural invariant, authority boundary, lifecycle, public API, persistence semantics, agent permissions, experiment methodology, or reproducibility, documentation is part of the change.
-
-Documentation should not be deferred as unrelated cleanup when the change alters what the system means.
 
 ## 12. AI implementation-agent rule
 
@@ -226,83 +153,32 @@ AI implementation agents must not treat Yellow or Red material as architectural 
 
 The agent should identify the authoritative contract before implementing a research proposal.
 
-This prevents the following failure mode:
+## 13. Repository organization
 
-```text
-AI generates plausible idea
-  -> idea enters research
-  -> agent mistakes research for specification
-  -> implementation occurs
-  -> documentation describes implementation
-  -> speculation becomes apparent architecture
-```
-
-The gate exists specifically to prevent this epistemic drift.
-
-## 13. Recommended repository organization
-
-Target structure:
-
-```text
-world-engine/
-├── README.md
-├── docs/
-│   ├── architecture/
-│   ├── contracts/
-│   ├── decisions/
-│   ├── implementation/
-│   └── operations/
-├── research/
-│   ├── active/
-│   ├── completed/
-│   ├── experiments/
-│   └── rejected/
-├── proposals/
-├── src/
-├── tests/
-├── tools/
-└── .github/
-    ├── pull_request_template.md
-    ├── CODEOWNERS
-    ├── workflows/
-    └── ISSUE_TEMPLATE/
-```
-
-This is a target, not a requirement to create all directories immediately.
+The repository may grow toward separate architecture, contracts, decisions, implementation, operations, research, proposals, source, tests, tools, and GitHub automation areas. This remains a target structure, not a requirement to create empty directories.
 
 ## 14. Main-branch policy
 
-`main` is the authoritative branch.
-
-As the project matures, protect `main` with appropriate controls such as required review, required validation checks, no force pushes, and no branch deletion.
-
-The repository should enforce the principle that authoritative state cannot be changed casually.
+`main` is the authoritative repository branch. Protect it with appropriate review and validation controls as the project matures.
 
 ## 15. Security and dependency checks
 
-Security and supply-chain concerns are part of the Green gate. Where available, use repository automation for secret detection, push protection, dependency review, and validation checks.
-
-A change is not Green merely because it compiles.
+Security, supply-chain, dependency, and validation concerns are part of the Green evaluation where applicable. A change is not Green merely because it compiles.
 
 ## 16. First-principles rule
 
-The World Engine development process follows:
-
 > Define the invariant. Identify the authority. Separate capability from implementation. Preserve provenance.
 
-The Green / Yellow / Red gate operationalizes that rule for repository changes.
+## 17. Governance decision addendum
 
-## 17. Decision
+Subsequent governance analysis established the following refinements to the original gate vocabulary:
 
-**GREEN: Adopt as World Engine development-process architecture.**
+1. Green / Yellow / Red is a promotion and development-disposition dimension, not a universal state machine.
+2. Evidence strength is represented independently by E0-E6.
+3. Issue workflow state is independent of promotion status.
+4. Authority is explicit and scoped.
+5. Insufficient evidence remains Yellow unless evidence establishes rejection.
+6. Research, Experiment, and Implementation are activities. Optional Orders may delegate bounded activities but are not mandatory process stages.
+7. Discussion is a process function and is not dependent on a particular GitHub object.
 
-The system should be implemented incrementally. The first practical repository additions should be the gate definition itself, a pull-request template, and machine-readable status conventions. Automated enforcement should be added after the conventions have been exercised against real changes.
-
-## 18. References
-
-- GitHub documentation: managing and standardizing pull requests, branch protection/rulesets, security and dependency review.
-- Git documentation: branching workflows and rebasing/history management.
-- Google Engineering Practices: code review standards, review checklist, and small change guidance.
-- Conventional Commits specification.
-
-These references inform the process but do not override World Engine's own architectural principles. External practice establishes precedent; World Engine's invariants determine applicability.
+These refinements preserve the original decision to use an explicit gate while removing semantic collisions identified during later examination.
