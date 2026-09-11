@@ -1,0 +1,62 @@
+# Machine-readable World Engine change-gate vocabulary.
+# This file defines the allowed values used by research and implementation records.
+
+status:
+  allowed:
+    - green
+    - yellow
+    - red
+
+confidence:
+  allowed:
+    - low
+    - medium
+    - high
+
+risk:
+  allowed:
+    - low
+    - medium
+    - high
+
+impact:
+  allowed:
+    - low
+    - medium
+    - high
+
+reversibility:
+  allowed:
+    - low
+    - medium
+    - high
+
+authority:
+  allowed:
+    - authoritative
+    - non-authoritative
+
+evidence_level:
+  allowed:
+    - E0
+    - E1
+    - E2
+    - E3
+    - E4
+    - E5
+    - E6
+
+promotion_target:
+  allowed:
+    - green
+    - red
+    - null
+
+# Gate invariants
+invariants:
+  - authoritative_changes_require_explicit_promotion
+  - yellow_material_is_not_authoritative
+  - red_material_is_not_authoritative
+  - status_must_be_explicit
+  - provenance_should_be_preserved
+  - counterfactual_work_must_not_mutate_parent_authority
