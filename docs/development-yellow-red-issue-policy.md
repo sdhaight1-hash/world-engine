@@ -8,36 +8,35 @@ This document defines a development-process rule for World Engine. It does not d
 
 ## Purpose
 
-GitHub Discussions are the permissive deliberation layer for open-ended questions, ideas, hypotheses, objections, and exploration.
+Discussion is the permissive deliberation function for open-ended questions, ideas, hypotheses, objections, and exploration.
 
 Because the current ChatGPT GitHub integration does not expose GitHub Discussion creation or management, consequential provisional work must be trackable through GitHub Issues when direct repository tracking is required.
 
-This document therefore establishes when World Engine uses **Yellow Issues** and **Red Issues**.
+This document establishes when World Engine uses **Yellow Issues** and **Red Issues**.
 
-## Core Rule
+## Core rule
 
-> **Discussion is deliberation. Yellow and Red Issues are tracked epistemic states. Green is authority.**
+> **Discussion is deliberation. Yellow and Red Issues are tracked epistemic conditions. Green is a promotion state, not a synonym for Issue state.**
 
 An Issue does not become authoritative merely because it exists in the repository.
 
-## State Model
+## State model
 
 ```text
 Discussion
     |
     | consequential uncertainty, research need, experiment, or objection
     v
-YELLOW Issue
+Issue
     |
-    | evaluation
-    +-------------------+
-    |                   |
-    v                   v
-GREEN               RED Issue
-    |                   |
-    v                   v
-Authority        Negative evidence / rejection
+    +--> Yellow: unresolved / provisional / not ready
+    |
+    +--> Green promotion path: sufficiently established for stated target
+    |
+    +--> Red: sufficiently evidenced rejection / negative knowledge
 ```
+
+Evidence level, Issue workflow state, promotion status, authority, and provenance remain separate dimensions.
 
 ## When to Create a Yellow Issue
 
@@ -45,21 +44,17 @@ The assistant should create a Yellow Issue proactively when an idea or uncertain
 
 Create a Yellow Issue when one or more of the following applies:
 
-- A discussion produces an unresolved architectural question that could materially affect World Engine.
+- An unresolved architectural question could materially affect World Engine.
 - A hypothesis may affect an architectural invariant or major subsystem.
-- A research question, experiment, or prototype is needed before a decision can responsibly be made.
+- Research, an experiment, or a prototype is needed before a responsible decision can be made.
 - Competing architectural candidates require explicit evaluation.
-- An implementation exists but its architectural validity has not yet been established.
-- External research appears promising but has not received World Engine-specific validation.
-- A previously accepted assumption is being challenged and requires investigation.
-- The project needs to preserve a provisional direction so it is not accidentally treated as authoritative.
-- Failure to track the uncertainty could plausibly cause duplicated work, premature commitment, or an architectural mistake.
+- An implementation exists but its architectural validity has not been established.
+- External research appears promising but lacks World Engine-specific validation.
+- A previously accepted assumption is being challenged.
+- A provisional direction must be preserved so it is not accidentally treated as authoritative.
+- Failure to track the uncertainty could plausibly cause duplicated work, premature commitment, or architectural error.
 
-### Yellow does not mean
-
-Do not create a Yellow Issue merely because an idea was mentioned, brainstormed, or remains uncertain in a trivial way.
-
-The threshold is **consequential uncertainty**.
+Do not create a Yellow Issue merely because an idea was mentioned or a trivial uncertainty exists. The threshold is **consequential uncertainty**.
 
 ### Yellow meaning
 
@@ -67,140 +62,131 @@ The threshold is **consequential uncertainty**.
 
 ## When to Create a Red Issue
 
-The assistant should create a Red Issue proactively when there is sufficient evidence or reasoning to conclude that an approach should not become authoritative, while preserving the conclusion as negative evidence.
+Create a Red Issue when sufficient evidence or reasoning establishes that an approach should not become authoritative for its documented scope.
 
-Create a Red Issue when one or more of the following applies:
+Examples:
 
-- An experiment falsifies the hypothesis.
-- A proposed design violates a World Engine invariant.
-- An approach creates unacceptable authority coupling.
-- A security, correctness, reproducibility, provenance, or integrity problem is identified.
-- An implementation works technically but is fundamentally incompatible with the architecture.
-- Research demonstrates that a material assumption is false.
-- A candidate has been deliberately rejected after meaningful evaluation.
-- A previously Green assumption is overturned and should no longer be treated as authoritative.
-- Continuing to treat the approach as viable would create a material risk of architectural drift.
+- an experiment falsifies the hypothesis;
+- a design violates an established invariant;
+- an approach creates unacceptable authority coupling;
+- a security, correctness, reproducibility, provenance, or integrity problem is established;
+- an implementation works technically but is fundamentally incompatible with the architecture;
+- a material assumption is shown to be false;
+- a candidate is deliberately rejected after meaningful evaluation;
+- a previously Green assumption is overturned;
+- continuing to treat the approach as viable would create material architectural risk.
 
 ### Red meaning
 
 > **Do not promote this. Preserve why.**
 
-A Red Issue is not a trash bin. It is part of the project's negative knowledge base.
+A Red Issue is negative knowledge, not a trash bin.
 
-## Promotion and Demotion
+## Insufficient evidence
+
+**Insufficient evidence is not rejection.**
+
+If the project cannot yet establish whether a proposition should be accepted or rejected, it remains Yellow unless there is an independent reason for rejection.
+
+## Promotion and reconsideration
 
 ### Yellow -> Green
 
-A Yellow Issue may move toward Green when:
+Promotion requires, as applicable:
 
 - the question has been answered sufficiently;
-- required experiments have passed;
 - relevant invariants remain preserved;
 - assumptions and dependencies are understood;
 - validation is appropriate to the risk;
-- the resulting decision or contract is explicitly recorded;
-- authoritative documentation is updated.
+- the resulting Decision, Specification, validated implementation, or other authoritative artifact is explicitly recorded;
+- provenance and documentation are updated.
 
-The Yellow Issue itself is not the authority. The resulting Decision, Specification, validated implementation, or other explicitly authoritative artifact is.
+The Yellow Issue itself is not the authority.
 
 ### Yellow -> Red
 
-A Yellow Issue should become Red when investigation establishes that the candidate should be rejected or cannot responsibly be promoted.
-
-The Red record should preserve the reason, evidence, relevant experiment, affected invariants, and any conditions under which the conclusion might later be revisited.
+Move toward Red when sufficient evidence establishes rejection. Preserve the reason, evidence, affected invariants, and reconsideration conditions.
 
 ### Yellow -> Yellow
 
-Remaining Yellow is valid. Unresolved work does not need to be artificially promoted or rejected merely to close the process loop.
+Remaining unresolved is valid. Do not manufacture a conclusion merely to close the loop.
 
 ### Red -> Reconsideration
 
-A Red conclusion may be revisited if genuinely new evidence changes the premises. Reopening a Red Issue does not erase the historical rejection. The new work must preserve the provenance of the original conclusion.
+A Red conclusion may be revisited when genuinely new evidence changes its premises. Reconsideration does not erase the historical conclusion.
 
-## Required Yellow Issue Information
+## Required Yellow Issue information
 
-When practical, a Yellow Issue should record:
+When practical, record:
 
-- Question or problem
-- Current understanding
-- Hypothesis or candidate approaches
-- Evidence and references
-- Objections and failure modes
-- Invariants potentially affected
-- Experiment or validation required
-- Assumptions
-- Remaining uncertainty
-- Promotion target
-- Originating Discussion, research item, experiment, or decision when one exists
+- question or problem;
+- current understanding;
+- hypothesis or candidates;
+- evidence and references;
+- objections and failure modes;
+- affected invariants;
+- required experiment or validation;
+- assumptions;
+- remaining uncertainty;
+- promotion target;
+- provenance to originating discussion, research, experiment, decision, or implementation.
 
-## Required Red Issue Information
+## Required Red Issue information
 
-A Red Issue should record:
+Record:
 
-- Rejected proposition or approach
-- Reason for rejection
-- Evidence supporting rejection
-- Invariants violated or risks identified
-- Experiment or evaluation that produced the result, when applicable
-- Alternatives considered
-- Conditions that would justify reconsideration, if any
-- Originating Discussion, research item, experiment, or decision when one exists
+- rejected proposition or approach;
+- reason for rejection;
+- evidence supporting rejection;
+- affected invariants or risks;
+- experiment or evaluation when applicable;
+- alternatives considered when material;
+- conditions for reconsideration, if any;
+- provenance to the originating work.
 
 ## Labels
 
-The minimum state labels are:
+Minimum state labels:
 
 - `yellow`
 - `red`
 
-Additional labels such as `research`, `experiment`, `architecture`, `security`, or `process` may describe the subject, but must not replace the state label.
+Additional labels may describe subject matter but do not replace the state label.
 
-The state label describes epistemic status. Subject labels describe content.
+## Assistant operating rule
 
-## Assistant Operating Rule
-
-When working on World Engine, the assistant must evaluate whether new conclusions have crossed the threshold for tracked Yellow or Red status.
-
-The assistant should create a Yellow or Red Issue without waiting for the user to explicitly request an Issue when the criteria in this document are met.
+The assistant must evaluate whether new conclusions have crossed the threshold for tracked Yellow or Red status.
 
 The assistant must not:
 
 - treat a Yellow Issue as an architectural specification;
 - treat a Red Issue as an authoritative prohibition outside its documented scope;
 - silently promote Yellow material into implementation authority;
-- erase negative evidence because a candidate was rejected;
-- use the absence of a Yellow or Red Issue as evidence that no uncertainty or rejection exists.
+- erase negative evidence;
+- use absence of a Yellow or Red Issue as evidence that no uncertainty or rejection exists.
 
-## Relationship to the Green / Yellow / Red Gate
+## Relationship to governance
 
-This policy extends Research Topic 005, **GitHub Practices and the Green / Yellow / Red Push Gate**.
+The canonical process model is defined in `docs/development-governance.md`.
 
-The same epistemic distinction applies regardless of where material originated:
+The Issue Examination and Issue Resolution Protocols define how tracked Issues are examined and resolved.
 
-- Discussion: permissive deliberation
-- Research: evidence and analysis
-- Experiment: feasibility or validation evidence
-- Yellow Issue: consequential provisional work requiring tracking
-- Red Issue: consequential rejection or negative evidence requiring preservation
-- Decision: explicit project decision
-- Specification: authoritative contract
-- Implementation: realized behavior validated against authority
-- Green: promotion into the appropriate authoritative repository artifact
+The Green / Yellow / Red gate in Research Topic 005 defines repository promotion semantics. This policy supplies the threshold for creating explicit Yellow and Red Issue records.
 
-## First-Principles Test
+## First-principles test
 
 Before creating or promoting a Yellow or Red Issue, ask:
 
-1. **What is the invariant?**
-2. **Who or what is authoritative?**
-3. **Is this a capability, or merely one implementation?**
-4. **What evidence exists?**
-5. **What remains uncertain?**
-6. **What would falsify the current hypothesis or justify rejection?**
-7. **What would be required for promotion?**
-8. **Can the result be reversed without corrupting authority?**
-9. **Where is the provenance recorded?**
+1. What is the invariant?
+2. Who or what is authoritative?
+3. Is this a capability, or merely one implementation?
+4. What evidence exists?
+5. What remains uncertain?
+6. What would falsify the hypothesis or justify rejection?
+7. What would be required for promotion?
+8. Can the result be reversed without corrupting authority?
+9. Where is the provenance recorded?
 
-## Final Principle
+## Final principle
 
 > **Nothing becomes authoritative merely because it was discussed, researched, implemented, or committed. Authority is granted through explicit validation and promotion.**
