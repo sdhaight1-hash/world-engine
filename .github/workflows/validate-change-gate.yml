@@ -1,0 +1,57 @@
+name: Validate change gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR gate metadata
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          body="${PR_BODY:-}"
+
+          require_value() {
+            local label="$1"
+            if ! grep -Eiq "^[-*]? ?\*?\*?${label}\*?\*?:[[:space:]]*(GREEN|YELLOW|RED|E[0-6]|LOW|MEDIUM|HIGH|AUTHORITATIVE|NON-AUTHORITATIVE)" <<< "$body"; then
+              echo "Missing or malformed gate field: ${label}"
+              exit 1
+            fi
+          }
+
+          require_value "Status"
+          require_value "Evidence"
+          require_value "Risk"
+          require_value "Impact"
+          require_value "Reversibility"
+          require_value "Authority"
+
+          if ! grep -Eiq "Proposed disposition" <<< "$body"; then
+            echo "Missing Proposed disposition section"
+            exit 1
+          fi
+
+          status=$(grep -Eio "Status:[[:space:]]*(GREEN|YELLOW|RED)" <<< "$body" | head -1 | tr '[:lower:]' '[:upper:]' || true)
+          authority=$(grep -Eio "Authority:[[:space:]]*(AUTHORITATIVE|NON-AUTHORITATIVE)" <<< "$body" | head -1 | tr '[:lower:]' '[:upper:]' || true)
+
+          if [[ "$status" == "STATUS: GREEN" && "$authority" != "AUTHORITY: AUTHORITATIVE" ]]; then
+            echo "GREEN changes must declare AUTHORITATIVE authority."
+            exit 1
+          fi
+
+          if [[ "$status" == "STATUS: RED" && "$authority" == "AUTHORITY: AUTHORITATIVE" ]]; then
+            echo "RED changes cannot declare AUTHORITATIVE authority."
+            exit 1
+          fi
+
+          echo "World Engine change-gate metadata is present and internally consistent."
