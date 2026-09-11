@@ -1,0 +1,10 @@
+{
+  "order": "ALPHA-RO-001",
+  "status": "SUFFICIENT_FOR_SECOND_PROTOTYPE",
+  "results": [
+    {"experiment":"unified_order_kinds","passed":true},
+    {"experiment":"proposal_authorization_separation","passed":true},
+    {"experiment":"virtual_snapshot_branch","passed":true},
+    {"experiment":"methodology_degradation","passed":true,"action":"create_methodology_research_order"}
+  ]
+}
